@@ -1,12 +1,20 @@
 import sys
 import csv
 import socket
+import string
 
 from junos_fw import junos_fw_rule
 
 TERM_PREFIX = 'term-'
+INDENT = 4
 
-if len(sys.argv) > 4:
+def indent(s, spaces):
+    s = string.split(s, '\n')
+    s = [(spaces * ' ') + line for line in s]
+    s = string.join(s, '\n')
+    return s
+
+if len(sys.argv) > 2:
     TERM_PREFIX = sys.argv[2]
 
 with open(sys.argv[1]) as csvfile:
@@ -30,4 +38,4 @@ with open(sys.argv[1]) as csvfile:
                             dst_cidr,
                             protocol,
                             ports)
-        print rule
+        print indent(rule, INDENT)
