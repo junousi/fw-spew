@@ -14,8 +14,11 @@ def indent(s, spaces):
     s = string.join(s, '\n')
     return s
 
+# Yes. argparse.
 if len(sys.argv) > 2:
     TERM_PREFIX = sys.argv[2]
+if len(sys.argv) > 3:
+    INDENT = int(sys.argv[3])
 
 with open(sys.argv[1]) as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=',')
