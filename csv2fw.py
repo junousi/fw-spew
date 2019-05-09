@@ -2,26 +2,41 @@ import sys
 import csv
 import socket
 import string
+import argparse
 
 import junos_fw
 
 from collections import defaultdict
 
+# Defaults
 TERM_PREFIX = 'term-'
 INDENT = 4
 
-# Yes. argparse.
-if len(sys.argv) > 2:
-    TERM_PREFIX = sys.argv[2]
-if len(sys.argv) > 3:
-    INDENT = int(sys.argv[3])
+# Arguments
+parser = argparse.ArgumentParser(description='Create firewall configuration',
+                                formatter_class=argparse.RawDescriptionHelpFormatter,
+                                epilog="""Create firewall configuration""")
+parser.add_argument('-t', '--term-prefix', dest='term_prefix',
+                    help='prefix for firewall terms')
+parser.add_argument("-i", "--indent", dest='indent', type=int, default=INDENT,
+                    help="amount of whitespace indent, defaults to " + str(INDENT))
+parser.add_argument('-f', '--file', dest="csv_file",
+                    required=True, help="csv file for source data")
+args = parser.parse_args()
 
+if args.term_prefix:
+    TERM_PREFIX = args.term_prefix
+if args.term_prefix:
+    INDENT = args.indent
+
+# Helpers
 def indent(s, spaces):
     s = string.split(s, '\n')
     s = [(spaces * ' ') + line for line in s]
     s = string.join(s, '\n')
     return s
 
+# Main functions
 def test_read_csv_and_print(f):
     with open(f) as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',')
@@ -40,6 +55,11 @@ def test_read_csv_and_print(f):
 
 def csv_to_dict(f):
     rules = defaultdict(list)
+    # Store firewall rules into a dict whose key tuple of:
+    # - Destination CIDR
+    # - Protocol (tcp/udp)
+    # - Whitespace separated list of destination ports.
+    # The dictionary contains lists of source CIDRs per tuple.
     with open(f) as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',')
         line_count = 0
@@ -69,8 +89,8 @@ def dict_to_junos(rules):
     return rules_formatted
 
 if __name__ == '__main__':
-    #read_csv_and_print(sys.argv[1])
-    rules = csv_to_dict(sys.argv[1])
+    #test_read_csv_and_print(args.csv_file)
+    rules = csv_to_dict(args.csv_file)
     rules_formatted = dict_to_junos(rules)
     for rule in rules_formatted:
         print indent(rule, INDENT)
