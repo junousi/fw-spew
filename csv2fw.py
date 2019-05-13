@@ -40,7 +40,6 @@ def indent(s, spaces):
 def test_read_csv_and_print(f):
     with open(f) as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',')
-        line_count = 0
         for idx, row in enumerate(csv_reader):
             src_cidr = row[0]
             dst_cidr = row[1]
@@ -62,7 +61,6 @@ def csv_to_dict(f):
     # The dictionary contains lists of source CIDRs per tuple.
     with open(f) as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',')
-        line_count = 0
         for idx, row in enumerate(csv_reader):
             src_cidr = row[0]
             dst_cidr = row[1]
