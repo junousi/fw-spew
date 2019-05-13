@@ -66,21 +66,8 @@ def csv_to_dict(f):
         for idx, row in enumerate(csv_reader):
             src_cidr = row[0]
             dst_cidr = row[1]
-            src_fqdn = ''
-            dst_fqdn = ''
             protocol = row[2]
             dst_ports = row[3]
-            if '/32' in src_cidr:
-                try:
-                    src_fqdn = socket.gethostbyaddr(src_cidr.split('/')[0])[0]
-                except:
-                    # No PTR returned from query.
-                    pass
-            if '/32' in dst_cidr:
-                try:
-                    dst_fqdn = socket.gethostbyaddr(dst_cidr.split('/')[0])[0]
-                except:
-                    pass
             rules[(dst_cidr,protocol,dst_ports)].append(src_cidr)
     return rules
 
